@@ -1,2 +1,3 @@
 - [Article editorial boundaries](article-editorial-boundaries.md) — engineering articles are general guidance, not unverified personal case studies or claims of live publication.
 - [Post-merge runtime verification](post-merge-runtime-verification.md) — successful dependency setup can still leave the Vite preview serving stale optimized dependencies.
+- [Email integration permissions](email-integration-permissions.md) — the connected Resend key permits sending, but cannot inspect domains or delivery records.

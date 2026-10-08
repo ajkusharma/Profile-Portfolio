@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useRef, useState } from "react";
+import { contactSchema, type ContactMessage } from "@shared/contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,16 +11,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin } from "lucide-react";
 
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
-
 export default function Contact() {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const pending = useRef<{ payload: string; id: string } | null>(null);
+  const submitting = useRef(false);
+  const form = useForm<ContactMessage>({
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -27,13 +26,46 @@ export default function Contact() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Message Sent",
-      description: "Thank you for reaching out. I'll get back to you soon!",
-    });
-    form.reset();
+  async function onSubmit(values: ContactMessage) {
+    if (submitting.current) return;
+    submitting.current = true;
+    setError(null);
+    setSent(false);
+    const payload = JSON.stringify(values);
+    if (pending.current?.payload !== payload) {
+      pending.current = { payload, id: crypto.randomUUID() };
+    }
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Contact-Submission-Id": pending.current!.id,
+        },
+        body: payload,
+        signal: AbortSignal.timeout(20000),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(typeof result.message === "string" ? result.message : "Unable to send your message. Please try again.");
+      }
+      if (response.status !== 202 || result.status !== "queued") {
+        throw new Error("We couldn't confirm your message was sent. Please try again.");
+      }
+      setSent(true);
+      toast({
+        title: "Message accepted",
+        description: "Your message has been queued for email delivery. Thank you for reaching out!",
+      });
+      form.reset();
+      pending.current = null;
+    } catch (err) {
+      setError(err instanceof Error && err.name === "Error"
+        ? err.message
+        : "We couldn't confirm your message was sent. Your text is still here; please try again.");
+    } finally {
+      submitting.current = false;
+    }
   }
 
   return (
@@ -96,7 +128,8 @@ export default function Contact() {
             <Card>
               <CardContent className="pt-6">
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <form onSubmit={form.handleSubmit(onSubmit)} aria-busy={form.formState.isSubmitting}>
+                    <fieldset disabled={form.formState.isSubmitting} className="space-y-6">
                     <FormField
                       control={form.control}
                       name="name"
@@ -104,7 +137,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input placeholder="John Doe" maxLength={100} autoComplete="name" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -117,7 +150,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="john@example.com" {...field} />
+                            <Input type="email" placeholder="john@example.com" maxLength={254} autoComplete="email" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -133,6 +166,7 @@ export default function Contact() {
                             <Textarea 
                               placeholder="Hello, I'd like to discuss a project..." 
                               className="min-h-[120px]" 
+                              maxLength={5000}
                               {...field} 
                             />
                           </FormControl>
@@ -140,9 +174,12 @@ export default function Contact() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full">
-                      Send Message
+                    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+                    {sent && <p role="status" className="text-sm">Your message has been queued for email delivery.</p>}
+                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                      {form.formState.isSubmitting ? "Sending..." : "Send Message"}
                     </Button>
+                    </fieldset>
                   </form>
                 </Form>
               </CardContent>

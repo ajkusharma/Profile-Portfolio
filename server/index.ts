@@ -4,6 +4,8 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 
 const app = express();
+// Replit forwards requests through its edge proxy.
+app.set("trust proxy", 1);
 const httpServer = createServer(app);
 
 declare module "http" {
@@ -14,6 +16,7 @@ declare module "http" {
 
 app.use(
   express.json({
+    limit: "16kb",
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
@@ -64,10 +67,12 @@ app.use((req, res, next) => {
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const message = status === 413
+      ? "Your message is too large. Please shorten it and try again."
+      : status === 400 ? "Invalid request. Please check your message and try again."
+      : "Something went wrong. Please try again.";
 
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after

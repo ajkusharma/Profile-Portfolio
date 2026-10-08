@@ -13,9 +13,9 @@ externalPort = 80
 PORT = "5000"
 
 [deployment]
-deploymentTarget = "static"
+deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
-publicDir = "dist/public"
+run = ["npm", "start"]
 
 [workflows]
 runButton = "Project"
@@ -35,8 +35,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev:client"
+args = "npm run dev"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [agent]
 mockupState = "MOCKUP"
@@ -44,3 +47,9 @@ mockupState = "MOCKUP"
 [postMerge]
 path = "script/post-merge.sh"
 timeoutMs = 180000
+
+[userenv]
+
+[userenv.shared]
+CONTACT_FROM_EMAIL = "onboarding@resend.dev"
+CONTACT_TO_EMAIL = "ajaysharma006@gmail.com"
