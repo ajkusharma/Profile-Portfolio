@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Download, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowRight, ExternalLink, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroBg from "@assets/generated_images/professional_developer_abstract_background_with_code_elements.png";
 import avatar from "@assets/generated_images/professional_developer_avatar_placeholder.png";
@@ -36,24 +36,38 @@ export default function Hero() {
             </p>
             
             <div className="flex flex-wrap gap-4 mb-10">
-              <Button size="lg" className="group">
-                View Projects 
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <Button size="lg" className="group" asChild>
+                <a href="#projects">
+                  View Projects
+                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </a>
               </Button>
-              <Button size="lg" variant="outline">
-                Download Resume
-                <Download className="ml-2 w-4 h-4" />
+              <Button size="lg" variant="outline" asChild>
+                <a
+                  href="https://www.ajkusharma.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Visit ajkusharma.com
+                  <ExternalLink className="ml-2 w-4 h-4" />
+                </a>
               </Button>
             </div>
 
             <div className="flex gap-6">
-              <a href="https://github.com" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="https://github.com" aria-label="GitHub" className="text-muted-foreground hover:text-primary transition-colors">
                 <Github className="w-6 h-6" />
               </a>
-              <a href="https://linkedin.com/in/ajay-sharma-developer" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://www.linkedin.com/in/ajay-sharma-developer"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ajay Sharma on LinkedIn"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Linkedin className="w-6 h-6" />
               </a>
-              <a href="mailto:contact@ajay.dev" className="text-muted-foreground hover:text-primary transition-colors">
+              <a href="mailto:contact@ajay.dev" aria-label="Email Ajay Sharma" className="text-muted-foreground hover:text-primary transition-colors">
                 <Mail className="w-6 h-6" />
               </a>
             </div>

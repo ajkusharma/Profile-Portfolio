@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
+import ThoughtLeadership from "@/components/ThoughtLeadership";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 
@@ -15,11 +16,22 @@ export default function Home() {
         <About />
         <Experience />
         <Projects />
+        <ThoughtLeadership />
         <Skills />
         <Contact />
       </main>
       <footer className="py-6 border-t border-border bg-background text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} Ajay Sharma. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} Ajay Sharma. All rights reserved.{" "}
+          <a
+            href="https://www.ajkusharma.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-1 text-primary underline-offset-4 hover:underline"
+          >
+            www.ajkusharma.com
+          </a>
+        </p>
       </footer>
     </div>
   );
