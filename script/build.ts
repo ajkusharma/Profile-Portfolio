@@ -1,6 +1,8 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, mkdir, writeFile } from "fs/promises";
+import path from "path";
+import { pathToFileURL } from "url";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -37,6 +39,33 @@ async function buildAll() {
 
   console.log("building client...");
   await viteBuild();
+
+  console.log("rendering static article pages...");
+  // Bundle the same reader as the SPA, omitting CSS imports during Node rendering.
+  // The Vite HTML template already links the compiled CSS for these components.
+  const rendererPath = path.resolve("dist/article-renderer.mjs");
+  await esbuild({
+    entryPoints: ["script/render-articles.tsx"],
+    outfile: rendererPath,
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    packages: "external",
+    jsx: "automatic",
+    loader: { ".css": "empty" },
+    alias: {
+      "@": path.resolve("client/src"),
+      "@shared": path.resolve("shared"),
+    },
+  });
+  const { renderArticles } = await import(pathToFileURL(rendererPath).href);
+  const template = await readFile("dist/public/index.html", "utf-8");
+  for (const page of renderArticles(template)) {
+    const destination = path.join("dist/public", page.path);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await writeFile(destination, page.html);
+  }
+  await rm(rendererPath);
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));

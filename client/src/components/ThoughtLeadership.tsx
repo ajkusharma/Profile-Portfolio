@@ -8,25 +8,19 @@ import {
   Linkedin,
   MessageSquareText,
 } from "lucide-react";
+import { Link } from "wouter";
+import { articles, articlePath } from "@shared/articles";
 
-const proposedTopics = [
+const articleTopics = [
   {
     number: "01",
-    eyebrow: "DATA SYSTEMS · PROPOSED TOPIC",
-    title: "How to handle Change Data Capture at scale with Oracle GoldenGate & Kafka",
-    summary:
-      "A practical architecture walkthrough: keeping event pipelines resilient, observable, and consistent as volume grows.",
-    tags: ["Oracle GoldenGate", "Apache Kafka", "Data architecture"],
+    article: articles[0],
     icon: Layers3,
     tone: "bg-sky-50 text-sky-800 border-sky-100",
   },
   {
     number: "02",
-    eyebrow: "AI ENGINEERING · PROPOSED TOPIC",
-    title: "Building Deterministic Workflows using LangGraph",
-    summary:
-      "A closer look at state, transitions, and repeatable execution in workflows that need more than a clever prompt.",
-    tags: ["LangGraph", "Workflow design", "LLM systems"],
+    article: articles[1],
     icon: Braces,
     tone: "bg-indigo-50 text-indigo-800 border-indigo-100",
   },
@@ -82,7 +76,7 @@ export default function ThoughtLeadership() {
           >
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-background/80 px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.15em] text-primary">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              Ideas in progress
+              Engineering notes
             </span>
             <h2
               id="thought-leadership-title"
@@ -92,9 +86,8 @@ export default function ThoughtLeadership() {
               <span className="text-primary">shared in the open.</span>
             </h2>
             <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
-              A proposed writing and sharing practice around the systems I
-              build: specific technical breakdowns, concise field notes, and
-              deeper architecture thinking.
+              Technical articles on system design decisions, reliable data
+              movement, and predictable AI workflows.
             </p>
 
             <div className="mt-9 w-full max-w-lg border-l-2 border-primary/25 pl-5">
@@ -120,8 +113,8 @@ export default function ThoughtLeadership() {
           </motion.div>
 
           <div className="space-y-4">
-            <h3 className="sr-only">Proposed article topics</h3>
-            {proposedTopics.map((topic, index) => {
+            <h3 className="sr-only">Engineering articles</h3>
+            {articleTopics.map((topic, index) => {
               const TopicIcon = topic.icon;
               return (
                 <motion.article
@@ -135,10 +128,10 @@ export default function ThoughtLeadership() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="font-mono text-[10px] font-medium tracking-[0.13em] text-muted-foreground sm:text-[11px]">
-                        {topic.eyebrow}
+                        {topic.article.category.toUpperCase()}
                       </p>
                       <h3 className="mt-3 max-w-2xl text-lg font-semibold leading-snug tracking-tight sm:text-xl">
-                        {topic.title}
+                        {topic.article.title}
                       </h3>
                     </div>
                     <span
@@ -149,10 +142,10 @@ export default function ThoughtLeadership() {
                     </span>
                   </div>
                   <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                    {topic.summary}
+                    {topic.article.description}
                   </p>
                   <ul aria-label="Topics covered" className="mt-5 flex flex-wrap gap-2">
-                    {topic.tags.map((tag) => (
+                    {topic.article.tags.map((tag) => (
                       <li
                         key={tag}
                         className="rounded-md bg-muted px-2.5 py-1 font-mono text-[11px] text-muted-foreground"
@@ -161,12 +154,16 @@ export default function ThoughtLeadership() {
                       </li>
                     ))}
                   </ul>
+                  <Link
+                    href={articlePath(topic.article)}
+                    className="mt-5 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    Read article
+                    <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+                  </Link>
                 </motion.article>
               );
             })}
-            <p className="px-1 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-              Proposed topics · not published articles
-            </p>
           </div>
         </div>
 

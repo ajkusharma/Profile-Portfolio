@@ -1,0 +1,1 @@
+- [Article editorial boundaries](article-editorial-boundaries.md) — engineering articles are general guidance, not unverified personal case studies or claims of live publication.
