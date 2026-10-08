@@ -82,4 +82,4 @@ timeoutMs = 180000
 
 [userenv.shared]
 CONTACT_FROM_EMAIL = "onboarding@resend.dev"
-CONTACT_TO_EMAIL = "ajaysharma006@gmail.com"
+CONTACT_TO_EMAIL = "ajkusharma@gmail.com"
