@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -8,6 +9,13 @@ import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 
 export default function Home() {
+  useEffect(() => {
+    const sectionId = window.location.hash.slice(1);
+    if (sectionId) {
+      document.getElementById(sectionId)?.scrollIntoView({ block: "start" });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <Navigation />

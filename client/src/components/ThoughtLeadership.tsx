@@ -65,7 +65,7 @@ export default function ThoughtLeadership() {
     <section
       id="thought-leadership"
       aria-labelledby="thought-leadership-title"
-      className="relative overflow-hidden border-y border-border/70 bg-muted/30 py-20 md:py-28"
+      className="relative scroll-mt-20 overflow-hidden border-y border-border/70 bg-muted/30 py-20 md:py-28"
     >
       <div
         aria-hidden="true"
